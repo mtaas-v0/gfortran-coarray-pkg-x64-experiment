@@ -62,6 +62,16 @@ jobs:
           
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
+
+      - name: Get Full Compiler Path (Windows)
+        id: get-path
+        shell: pwsh
+        run: |
+          $FullPath = (Get-Command "${{ steps.setup-fortran.outputs.fc }}").Source
+          Write-Host "Compiler full path is: $FullPath"
+          
+          # Save it as an output for subsequent steps
+          echo "fc_path=$FullPath" >> $env:GITHUB_OUTPUT
         
       - name: Clone OpenCoarrays
         run: |
@@ -70,8 +80,6 @@ jobs:
       - name: Configure and Build OpenCoarrays
         shell: cmd
         run: |
-        
-          call "%ONEAPI_ROOT%\setvars.bat"
           
           :: Environment paths are auto-configured by the setup action!
           cd OpenCoarrays
@@ -80,7 +88,7 @@ jobs:
     
           :: Configure CMake using Intel Fortran compiler (ifx)
           cmake .. -G "Visual Studio 17 2022" ^
-                   -DCMAKE_Fortran_COMPILER="${{ steps.setup-fortran.outputs.fc }}" ^
+                   -DCMAKE_Fortran_COMPILER="${{ steps.get-path.outputs.fc_path }}" ^
                    -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays"
                    
           :: Compile and install the library
