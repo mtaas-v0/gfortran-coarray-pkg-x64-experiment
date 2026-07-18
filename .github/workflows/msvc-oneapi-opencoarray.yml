@@ -13,21 +13,21 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - name: Install Intel oneAPI Fortran Compiler (ifx)
-      uses: intel/oneapi-setup-action@v1
-      with:
-        components: intel-oneapi-compiler-fortran  
+
 #    - name: Setup Intel Next-Gen Fortran (ifx)
 #      uses: fortran-lang/setup-fortran@v1
 #      with:
 #        compiler: intel
 #        version: '25.2' # Or a specific year/version if needed
     # Installs the Intel oneAPI tools natively onto the runner
-#    - name: Install Intel oneAPI
-#      uses: modflowpy/install-intelfortran-action@v1
-#      with:
+     - name: Install Intel oneAPI
+       uses: modflowpy/install-intelfortran-action@v1
+       with:
         # Options: 'compiler' (default), 'mkl', or 'hpckit'
-#        component: hpckit 
+         component: |
+           hpckit 
+           compiler
+           
     # (no-windows)
 #    - name: Setup Intel oneAPI
 #      uses: rscohn2/setup-oneapi@v0
