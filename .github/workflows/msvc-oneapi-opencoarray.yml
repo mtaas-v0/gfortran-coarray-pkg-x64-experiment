@@ -91,12 +91,9 @@ jobs:
           cd build
     
           :: Configure CMake using Intel Fortran compiler (ifx)
-          cmake .. -G "Visual Studio 17 2022" ^
+          cmake .. -G "Ninja" ^
                    -DCMAKE_Fortran_COMPILER="%FC_PATH%" ^
-                   -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays" ^
-                   -A x64 ^
-                   -DCMAKE_MAKE_PROGRAM="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe" ^
-                   -DCMAKE_VS_MSBUILD_COMMAND="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe" 
+                   -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays" 
                    
           :: Compile and install the library
           cmake --build . --config Release --target install
