@@ -62,9 +62,9 @@ jobs:
         id: setup-fortran
         with:
           compiler: intel
-          version: '2024.2'
+          version: '2025.0'
                     # Force inclusion of development toolkits if missing from default images
-          components: 'intel.oneapi.win.ifx:intel.oneapi.win.mpi.devel' 
+          components: 'intel.oneapi.win.ifx:intel.oneapi.win.mpi'
 
 
       - name: List All File Paths Recursively
