@@ -13,8 +13,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 1. Spin up an MSYS2 environment targeting UCRT64
-    - name: Setup MSYS2 and Install Packages
+    # 1. Setup MSYS2 with UCRT64 toolchain, MS-MPI, and build tools
+    - name: Setup MSYS2 and Dependencies
       uses: msys2/setup-msys2@v2
       with:
         msystem: UCRT64
@@ -22,26 +22,69 @@ jobs:
         install: >-
           mingw-w64-ucrt-x86_64-gcc-fortran
           mingw-w64-ucrt-x86_64-msmpi
-          mingw-w64-ucrt-x86_64-open-coarrays
+          mingw-w64-ucrt-x86_64-cmake
+          mingw-w64-ucrt-x86_64-make
+          git
+          zip
 
-    # 2. Stage the required MinGW structure and compress it
+    # 2. Clone and build OpenCoarrays directly from source
+    - name: Compile OpenCoarrays from Source
+      shell: msys2 {0}
+      run: |
+        echo "Cloning the OpenCoarrays repository..."
+        git clone https://github.com
+        cd OpenCoarrays
+        
+        echo "Configuring build directory..."
+        mkdir build && cd build
+        
+        # Point CMake explicitly to our UCRT64 GFortran/GCC installations
+        cmake .. -G "MinGW Makefiles" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=/ucrt64 \
+          -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
+          -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe
+          
+        echo "Compiling and installing OpenCoarrays into /ucrt64..."
+        mingw32-make -j$(nproc)
+        mingw32-make install
+
+    # 3. Verify the installation works inside the runner environment
+    - name: Smoke Test Coarray Verification
+      shell: msys2 {0}
+      run: |
+        echo "Checking binary configurations..."
+        caf --version
+        
+        echo "Creating a quick Coarray test file..."
+        cat << 'EOF' > test_caf.f90
+        program hello_caf
+          implicit none
+          print *, "Hello from Image", this_image(), "out of", num_images()
+        end program hello_caf
+        EOF
+        
+        echo "Testing Compilation..."
+        caf test_caf.f90 -o test_caf.exe
+        
+        echo "Testing Execution (running 2 images)..."
+        cafrun -np 2 ./test_caf.exe
+
+    # 4. Extract runtime and bundle everything into a portable ZIP
     - name: Gather and Zip Toolchain
       shell: msys2 {0}
       run: |
-        echo "Creating an output directory structure..."
+        echo "Staging distribution structure..."
         mkdir -p /c/workspace/caf-dist/ucrt64
         
-        # Copy the entire runtime directory structure
-        echo "Copying compiler and libraries..."
+        echo "Copying complete compiler, MPI, and CAF libraries..."
         cp -r /ucrt64/* /c/workspace/caf-dist/ucrt64/
         
-        # Clean out pacman metadata caches to significantly reduce zip size
-        echo "Cleaning unnecessary package metadata..."
+        echo "Purging pacman repository metadata logs..."
         rm -rf /c/workspace/caf-dist/ucrt64/lib/pacman/
         
-        # Navigate to the workspace and compress the directory 
         cd /c/workspace/caf-dist
-        echo "Compressing into a portable zip package..."
+        echo "Compressing binaries into ZIP file..."
         zip -r /c/workspace/caf-windows-x64-coarrays.zip ucrt64/
 
     # 3. Upload the generated zip as a downloadable CI artifact
