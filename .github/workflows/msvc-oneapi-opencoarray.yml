@@ -53,15 +53,21 @@ jobs:
     steps:
       - name: Configure Developer Command Prompt for MSVC
         uses: ilammy/msvc-dev-cmd@v1
-        
+      
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - uses: fortran-lang/setup-fortran@v1
         id: setup-fortran
         with:
           compiler: intel
           version: '2025.0'
-          
- #     - name: Setup MSBuild
- #       uses: microsoft/setup-msbuild@v2
+
+      - name: List All File Paths Recursively
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse -File -Path "C:\Program Files (x86)\Intel\oneAPI\mpi\latest" | Select-Object -ExpandProperty FullName
 
       - name: Get Full Compiler Path (Windows)
         id: get-path
