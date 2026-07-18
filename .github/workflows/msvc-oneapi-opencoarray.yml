@@ -18,8 +18,9 @@ jobs:
       uses: rscohn2/setup-oneapi@v0
       with:
         components: |
-          intel-oneapi-compilers
-          intel-oneapi-mpi
+          mkl
+          icx/ifx
+          impl
         cache: true # Drastically speeds up subsequent pipeline runs
 
     - name: Clone OpenCoarrays
