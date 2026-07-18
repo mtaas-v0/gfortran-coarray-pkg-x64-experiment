@@ -95,6 +95,7 @@ jobs:
                    -DCMAKE_Fortran_COMPILER="%FC_PATH%" ^
                    -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays" ^
                    -A x64 ^
+                   -DCMAKE_MAKE_PROGRAM="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe" ^
                    -DCMAKE_VS_MSBUILD_COMMAND="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe" 
                    
           :: Compile and install the library
