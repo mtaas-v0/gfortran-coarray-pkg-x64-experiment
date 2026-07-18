@@ -19,7 +19,8 @@ jobs:
       with:
         components: |
           mkl
-          icx/ifx
+          icx
+          ifx
           impl
         cache: true # Drastically speeds up subsequent pipeline runs
 
