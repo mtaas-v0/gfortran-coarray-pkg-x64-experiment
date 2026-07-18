@@ -1,15 +1,52 @@
 name: msvc-oneapi-opencoarray.yml
 
 on:
-  push:
-    branches: 
-      main
   workflow_dispatch:
-    
+  
   
 
 jobs:
+  test-fortran-cc:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+      #ubuntu-latest, macos-latest, 
+        os: [windows-2022]
+        toolchain:
+          - {compiler: gcc, version: 'latest'}
+          - {compiler: intel, version: '2025.0'}
+          - {compiler: intel-classic, version: '2021.10'}
+          - {compiler: nvidia-hpc, version: 'latest'}
+          - {compiler: lfortran, version: '0.45.0'}
+          - {compiler: aocc, version: '5.1.0'}
+        exclude:
+          - os: macos-latest
+            toolchain: {compiler: intel}
+          - os: macos-latest
+            toolchain: {compiler: intel-classic}
+          - os: macos-latest
+            toolchain: {compiler: nvidia-hpc}
+          - os: windows-latest
+            toolchain: {compiler: nvidia-hpc}
+          - os: macos-latest
+            toolchain: {compiler: aocc}
+          - os: windows-latest
+            toolchain: {compiler: aocc}
+
+    steps:
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: ${{ matrix.toolchain.compiler }}
+          version: ${{ matrix.toolchain.version }}
+
+      - run: |
+          ${{ env.FC }} ... # environment vars FC, CC, and CXX are set
+          ${{ steps.setup-fortran.outputs.fc }} ... # outputs work too
+          
   build-windows:
+    if: false
     runs-on: windows-2022
 
     steps:
