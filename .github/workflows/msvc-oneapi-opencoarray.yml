@@ -51,6 +51,47 @@ jobs:
     runs-on: windows-2022
 
     steps:
+      - name: Checkout Primary Workspace
+        uses: actions/checkout@v4
+        with:
+          path: my-project
+
+      - name: Checkout OpenCoarrays
+        uses: actions/checkout@v4
+        with:
+          repository: sourceryinstitute/OpenCoarrays
+          ref: main
+          path: opencoarrays-src
+          
+      # Step 3: Directly overwrite the original files
+      - name: Copy Patched Files Over
+        shell: bash
+        run: |
+          # Overwrite the CMake layer file
+          cp -f my-project/.github/replacements/CMakeLists.txt opencoarrays-src/src/mpi/CMakeLists.txt
+          
+          # Overwrite the C transport layer file
+          cp -f my-project/.github/replacements/mpi_caf.c opencoarrays-src/src/mpi/mpi_caf.c
+          
+          # Optional: Status check to verify modifications are tracked
+          cd opencoarrays-src
+          git status
+          
+      # Step 3: Inject the file patch safely using cross-platform Bash flags
+      - name: Apply Multi-File Patch
+        if: false
+        shell: bash
+        run: |
+          cd opencoarrays-src
+          
+          # --ignore-space-change resolves Windows CRLF vs Linux LF syntax warnings
+          git apply --ignore-space-change ../my-project/.github/patches/windows_shim.patch
+          
+          # Optional: Verify changes hit both CMakeLists.txt and mpi_caf.c
+          git status
+
+
+    
       - name: Configure Developer Command Prompt for MSVC
         uses: ilammy/msvc-dev-cmd@v1
       
@@ -92,29 +133,6 @@ jobs:
           # Save it as an output for subsequent steps
           echo "fc_path=$FullPath" >> $env:GITHUB_OUTPUT
         
-      - name: Checkout Primary Workspace
-        uses: actions/checkout@v4
-        with:
-          path: my-project
-
-      - name: Checkout OpenCoarrays
-        uses: actions/checkout@v4
-        with:
-          repository: sourceryinstitute/OpenCoarrays
-          ref: main
-          path: opencoarrays-src
-
-            # Step 3: Inject the file patch safely using cross-platform Bash flags
-      - name: Apply Multi-File Patch
-        shell: bash
-        run: |
-          cd opencoarrays-src
-          
-          # --ignore-space-change resolves Windows CRLF vs Linux LF syntax warnings
-          git apply --ignore-space-change ../my-project/.github/patches/windows_shim.patch
-          
-          # Optional: Verify changes hit both CMakeLists.txt and mpi_caf.c
-          git status
 
 
       - name: Configure and Build OpenCoarrays
