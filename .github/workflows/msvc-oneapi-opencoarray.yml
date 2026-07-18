@@ -84,7 +84,7 @@ jobs:
             C:\\Program Files (x86)\\Intel\\oneAPI\\compiler\\latest\\bin\\ifx.exe
           #FC_PATH: ${{ steps.get-path.outputs.fc_path }}
         run: |
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" --force intel64 vs2022
+          :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" --force intel64 vs2022
           :: Environment paths are auto-configured by the setup action!
           cd OpenCoarrays
           mkdir build
@@ -93,7 +93,9 @@ jobs:
           :: Configure CMake using Intel Fortran compiler (ifx)
           cmake .. -G "Visual Studio 17 2022" ^
                    -DCMAKE_Fortran_COMPILER="%FC_PATH%" ^
-                   -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays"
+                   -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays" ^
+                   -A x64 ^
+                   -DCMAKE_VS_MSBUILD_COMMAND="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe" 
                    
           :: Compile and install the library
           cmake --build . --config Release --target install
