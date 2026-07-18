@@ -152,8 +152,8 @@ jobs:
           cmake .. -G "Ninja" -DBUILD_SHARED_LIBS=OFF -DCMAKE_Fortran_COMPILER="%FC_PATH%" -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays"  -Dimpi_lib_dir="C:/Program Files (x86)/Intel/oneAPI/mpi/latest/lib/win" -Dimpi_dll_dir="C:/Program Files (x86)/Intel/oneAPI/mpi/latest/bin"
           :: set NINJAFLAGS="-w dupbuild=warn"
           :: Compile and install the library
-          cmake --build . --config Release --target install  -- -w dupbuild=warn
-            
+          :: cmake --build . --config Release --target install  -- -w dupbuild=warn
+          "C:/ProgramData/chocolatey/bin/ninja.exe" "-C" "D:/a/gfortran-coarray-pkg-x64-experiment/gfortran-coarray-pkg-x64-experiment/opencoarrays-src/build" "-t" "recompact" -w dupbuild=warn
 
 #    - name: Setup Intel Next-Gen Fortran (ifx)
 #      uses: fortran-lang/setup-fortran@v1
