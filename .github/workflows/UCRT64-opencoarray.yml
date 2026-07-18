@@ -1,8 +1,6 @@
 name: Package Portable Coarray Fortran
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch: # Allows you to run it manually from the GitHub UI
 
 jobs:
@@ -46,12 +44,7 @@ jobs:
         mkdir build && cd build
         
         # Point CMake explicitly to our UCRT64 GFortran/GCC installations
-        cmake .. -G "MinGW Makefiles" \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX=/ucrt64 \
-          -DMPI_DIR="C:/Program Files (x86)/Intel/oneAPI/mpi/latest" \      
-          -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
-          -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe 
+        cmake .. -G "MinGW Makefiles"  -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/ucrt64  -DMPI_DIR="C:/Program Files (x86)/Intel/oneAPI/mpi/latest"   -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe    -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe 
           
         echo "Compiling and installing OpenCoarrays into /ucrt64..."
         mingw32-make -j$(nproc)
