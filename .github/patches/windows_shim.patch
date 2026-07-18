@@ -1,0 +1,35 @@
+diff --git a/src/mpi/CMakeLists.txt b/src/mpi/CMakeLists.txt
+index 1234567..89abcdef 100644
+--- a/src/mpi/CMakeLists.txt
++++ b/src/mpi/CMakeLists.txt
+@@ -3,3 +3,8 @@ CHECK_SYMBOL_EXISTS(SIGINT "signal.h" HAVE_SIGINT)
+ CHECK_SYMBOL_EXISTS(SIGKILL "signal.h" HAVE_SIGKILL)
+ CHECK_SYMBOL_EXISTS(SIGILL "signal.h" HAVE_SIGILL)
++
++# Force signal macros to true for Windows compatibility tracking
++SET(HAVE_SIGINT 1 CACHE INTERNAL "")
++SET(HAVE_SIGKILL 1 CACHE INTERNAL "")
++SET(HAVE_SIGILL 1 CACHE INTERNAL "")
+diff --git a/src/mpi/mpi_caf.c b/src/mpi/mpi_caf.c
+index a1b2c3d..e5f6g7h 100644
+--- a/src/mpi/mpi_caf.c
++++ b/src/mpi/mpi_caf.c
+@@ -10,3 +10,18 @@
+ #include <signal.h>
++
++/* Windows Compatibility Shim for SIGKILL */
++#if defined(_WIN32) || defined(_WIN64)
++  #include <windows.h>
++  #ifndef SIGKILL
++    #define SIGKILL 9
++  #endif
++  /* Intercept raise() calls on Windows when targeted at SIGKILL */
++  static inline int win32_patched_raise(int sig) {
++      if (sig == SIGKILL) {
++          TerminateProcess(GetCurrentProcess(), 9);
++          return 0;
++      }
++      return raise(sig);
++  }
++  #define raise(x) win32_patched_raise(x)
++#endif
