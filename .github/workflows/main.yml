@@ -32,7 +32,7 @@ jobs:
       shell: msys2 {0}
       run: |
         echo "Cloning the OpenCoarrays repository..."
-        git clone https://github.com
+        git clone https://github.com/sourceryinstitute/OpenCoarrays
         cd OpenCoarrays
         
         echo "Configuring build directory..."
