@@ -23,13 +23,17 @@ jobs:
       
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
-
-    # Installs the Intel oneAPI tools natively onto the runner
-    - name: Install Intel oneAPI
-      uses: modflowpy/install-intelfortran-action@v1
+    - name: Setup Intel Next-Gen Fortran (ifx)
+      uses: fortran-lang/setup-fortran@v1
       with:
+        compiler: intel
+        version: 'latest' # Or a specific year/version if needed
+    # Installs the Intel oneAPI tools natively onto the runner
+#    - name: Install Intel oneAPI
+#      uses: modflowpy/install-intelfortran-action@v1
+#      with:
         # Options: 'compiler' (default), 'mkl', or 'hpckit'
-        component: hpckit 
+#        component: hpckit 
     # (no-windows)
 #    - name: Setup Intel oneAPI
 #      uses: rscohn2/setup-oneapi@v0
