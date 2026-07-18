@@ -65,12 +65,22 @@ jobs:
           version: '2025.0'
                     # Force inclusion of development toolkits if missing from default images
           components: 'intel.oneapi.win.ifx:intel.oneapi.win.mpi'
-
+      
+      - name: Force Install Intel MPI SDK Fallback
+        shell: powershell
+        run: |
+          # 1. Download the standalone Windows Intel MPI Web Installer (2025 base)
+          $url = "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/eef6c110-18cb-4d38-95e7-71a0b5d3f01e/intel-mpi-2021.18.0.750_offline.exe"
+          Invoke-WebRequest -Uri $url -OutFile "intel_mpi_setup.exe"
+          
+          # 2. Trigger a silent, non-interactive installation forcing developer hooks
+          Write-Host "Installing Intel MPI Developer SDK..."
+          Start-Process -FilePath ".\intel_mpi_setup.exe" -ArgumentList "--install-mode=silent", "--accept-eula", "--components=all" -Wait
 
       - name: List All File Paths Recursively
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse -File -Path "C:\Program Files (x86)\Intel\oneAPI\mpi\latest" | Select-Object -ExpandProperty FullName
+          Get-ChildItem -Recurse -File -Path "C:\Program Files (x86)\Intel\oneAPI\mpi" | Select-Object -ExpandProperty FullName
 
       - name: Get Full Compiler Path (Windows)
         id: get-path
