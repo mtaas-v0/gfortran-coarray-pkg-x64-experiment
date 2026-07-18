@@ -80,7 +80,9 @@ jobs:
       - name: Configure and Build OpenCoarrays
         shell: cmd  
         env:
-          FC_PATH: ${{ steps.get-path.outputs.fc_path }}
+          FC_PATH: |
+            C:\\Program Files (x86)\\Intel\\oneAPI\\compiler\\latest\\bin\\ifx.exe
+          #FC_PATH: ${{ steps.get-path.outputs.fc_path }}
         run: |
           
           :: Environment paths are auto-configured by the setup action!
