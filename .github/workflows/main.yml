@@ -49,6 +49,7 @@ jobs:
         cmake .. -G "MinGW Makefiles" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=/ucrt64 \
+          -DMPI_DIR="C:/Program Files (x86)/Intel/oneAPI/mpi/latest" \      
           -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
           -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe 
           
