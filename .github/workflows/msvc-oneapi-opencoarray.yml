@@ -16,16 +16,32 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Well-known community action to install oneAPI components
-    - name: Setup Intel oneAPI
-      uses: rscohn2/setup-oneapi@v0
+      
+        # Official action to configure MSVC 2022 environment variables (cl, link, nmake, etc.)
+    - name: Configure Developer Command Prompt for MSVC
+      uses: ilammy/msvc-dev-cmd@v1
       with:
-        components: |
-          mkl
-          icx
-          ifx
-          impi
-        cache: true # Drastically speeds up subsequent pipeline runs
+        toolset: '14.3' # Specifies the MSVC 2022 compiler version
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    # Installs the Intel oneAPI tools natively onto the runner
+    - name: Install Intel oneAPI
+      uses: modflowpy/install-intelfortran-action@v1
+      with:
+        # Options: 'compiler' (default), 'mkl', or 'hpckit'
+        component: hpckit 
+    # (no-windows)
+#    - name: Setup Intel oneAPI
+#      uses: rscohn2/setup-oneapi@v0
+#      with:
+#        components: |
+#          mkl
+#          icx
+#          ifx
+#          impi
+#        cache: true # Drastically speeds up subsequent pipeline runs
 
     - name: Clone OpenCoarrays
       run: |
