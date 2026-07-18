@@ -1,4 +1,4 @@
-name: Build OpenCoarrays on Windows
+name: msvc-oneapi-opencoarray.yml
 
 on:  
   workflow_dispatch
