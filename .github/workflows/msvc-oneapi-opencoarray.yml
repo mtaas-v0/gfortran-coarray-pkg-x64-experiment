@@ -91,7 +91,7 @@ jobs:
           cd build
     
           :: Configure CMake using Intel Fortran compiler (ifx)
-          cmake .. -G "Ninja" -DCMAKE_Fortran_COMPILER="%FC_PATH%" -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays" 
+          cmake .. -G "Ninja" -DCMAKE_Fortran_COMPILER="%FC_PATH%" -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays"  -Dimpi_lib_dir="C:/Program Files (x86)/Intel/oneAPI/mpi/latest/lib/win" -Dimpi_dll_dir="C:/Program Files (x86)/Intel/oneAPI/mpi/latest/bin"
                    
           :: Compile and install the library
           cmake --build . --config Release --target install
