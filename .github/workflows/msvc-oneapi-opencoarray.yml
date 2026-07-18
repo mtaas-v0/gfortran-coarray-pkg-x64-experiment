@@ -92,10 +92,31 @@ jobs:
           # Save it as an output for subsequent steps
           echo "fc_path=$FullPath" >> $env:GITHUB_OUTPUT
         
-      - name: Clone OpenCoarrays
+      - name: Checkout Primary Workspace
+        uses: actions/checkout@v4
+        with:
+          path: my-project
+
+      - name: Checkout OpenCoarrays
+        uses: actions/checkout@v4
+        with:
+          repository: sourceryinstitute/OpenCoarrays
+          ref: main
+          path: opencoarrays-src
+
+            # Step 3: Inject the file patch safely using cross-platform Bash flags
+      - name: Apply Multi-File Patch
+        shell: bash
         run: |
-          git clone https://github.com/sourceryinstitute/OpenCoarrays
-      
+          cd opencoarrays-src
+          
+          # --ignore-space-change resolves Windows CRLF vs Linux LF syntax warnings
+          git apply --ignore-space-change ../my-project/.github/patches/windows_shim.patch
+          
+          # Optional: Verify changes hit both CMakeLists.txt and mpi_caf.c
+          git status
+
+
       - name: Configure and Build OpenCoarrays
         shell: cmd  
         env:
@@ -105,7 +126,7 @@ jobs:
         run: |
           :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" --force intel64 vs2022
           :: Environment paths are auto-configured by the setup action!
-          cd OpenCoarrays
+          cd opencoarrays-src
           mkdir build
           cd build
     
