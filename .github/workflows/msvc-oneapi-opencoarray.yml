@@ -1,7 +1,10 @@
 name: msvc-oneapi-opencoarray.yml
 
-on:  
-  workflow_dispatch
+on:
+  push:
+    branches: 
+      main
+  workflow_dispatch:
     
   
 
@@ -21,7 +24,7 @@ jobs:
           mkl
           icx
           ifx
-          impl
+          impi
         cache: true # Drastically speeds up subsequent pipeline runs
 
     - name: Clone OpenCoarrays
