@@ -62,7 +62,7 @@ jobs:
         id: setup-fortran
         with:
           compiler: intel
-          version: '2025.0'
+          version: '2024.2'
                     # Force inclusion of development toolkits if missing from default images
           components: 'intel.oneapi.win.ifx:intel.oneapi.win.mpi.devel' 
 
