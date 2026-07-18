@@ -7,6 +7,7 @@ on:
 
 jobs:
   test-fortran-cc:
+    if: false
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -46,20 +47,19 @@ jobs:
           ${{ steps.setup-fortran.outputs.fc }} ... # outputs work too
           
   build-windows:
-    if: false
+    if: true
     runs-on: windows-2022
 
     steps:
-      - name: Install Intel oneAPI
-        uses: modflowpy/install-intelfortran-action@v1
-        with:
-        # Options: 'compiler' (default), 'mkl', or 'hpckit'
-          component: |
-           hpckit 
-           compiler
       - name: Configure Developer Command Prompt for MSVC
         uses: ilammy/msvc-dev-cmd@v1
         
+      - uses: fortran-lang/setup-fortran@v1
+        id: setup-fortran
+        with:
+          compiler: intel
+          version: '2025.0'
+          
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
         
