@@ -75,7 +75,7 @@ jobs:
           
           # 2. Trigger a silent, non-interactive installation forcing developer hooks
           Write-Host "Installing Intel MPI Developer SDK..."
-          Start-Process -FilePath ".\intel_mpi_setup.exe" -ArgumentList "--install-mode=silent", "--accept-eula", "--components=all" -Wait
+          Start-Process -FilePath ".\intel_mpi_setup.exe" -ArgumentList "-a", "--silent ", "--eula", "accept" -Wait
 
       - name: List All File Paths Recursively
         shell: pwsh
