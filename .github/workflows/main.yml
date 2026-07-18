@@ -1,0 +1,53 @@
+name: Package Portable Coarray Fortran
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows you to run it manually from the GitHub UI
+
+jobs:
+  build-zip:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 1. Spin up an MSYS2 environment targeting UCRT64
+    - name: Setup MSYS2 and Install Packages
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc-fortran
+          mingw-w64-ucrt-x86_64-msmpi
+          mingw-w64-ucrt-x86_64-open-coarrays
+
+    # 2. Stage the required MinGW structure and compress it
+    - name: Gather and Zip Toolchain
+      shell: msys2 {0}
+      run: |
+        echo "Creating an output directory structure..."
+        mkdir -p /c/workspace/caf-dist/ucrt64
+        
+        # Copy the entire runtime directory structure
+        echo "Copying compiler and libraries..."
+        cp -r /ucrt64/* /c/workspace/caf-dist/ucrt64/
+        
+        # Clean out pacman metadata caches to significantly reduce zip size
+        echo "Cleaning unnecessary package metadata..."
+        rm -rf /c/workspace/caf-dist/ucrt64/lib/pacman/
+        
+        # Navigate to the workspace and compress the directory 
+        cd /c/workspace/caf-dist
+        echo "Compressing into a portable zip package..."
+        zip -r /c/workspace/caf-windows-x64-coarrays.zip ucrt64/
+
+    # 3. Upload the generated zip as a downloadable CI artifact
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: caf-windows-x64-coarrays
+        path: C:\caf-windows-x64-coarrays.zip
+        retention-days: 7
