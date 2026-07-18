@@ -20,8 +20,6 @@ jobs:
         # Official action to configure MSVC 2022 environment variables (cl, link, nmake, etc.)
     - name: Configure Developer Command Prompt for MSVC
       uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: '14.3' # Specifies the MSVC 2022 compiler version
       
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
