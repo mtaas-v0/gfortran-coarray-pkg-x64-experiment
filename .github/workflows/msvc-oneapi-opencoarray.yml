@@ -1,0 +1,43 @@
+name: Build OpenCoarrays on Windows
+
+on:  
+  workflow_dispatch
+    
+  
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Well-known community action to install oneAPI components
+    - name: Setup Intel oneAPI
+      uses: rscohn2/setup-oneapi@v0
+      with:
+        components: |
+          intel-oneapi-compilers
+          intel-oneapi-mpi
+        cache: true # Drastically speeds up subsequent pipeline runs
+
+    - name: Clone OpenCoarrays
+      run: |
+        git clone https://github.com/sourceryinstitute/OpenCoarrays
+
+    - name: Configure and Build OpenCoarrays
+      shell: cmd
+      run: |
+        :: Environment paths are auto-configured by the setup action!
+        cd OpenCoarrays
+        mkdir build
+        cd build
+        
+        :: Configure CMake using Intel Fortran compiler (ifx)
+        cmake .. -G "Visual Studio 17 2022" ^
+                 -T "Intel(R) Next-Gen Fortran Compiler" ^
+                 -DCMAKE_INSTALL_PREFIX="C:\OpenCoarrays"
+                 
+        :: Compile and install the library
+        cmake --build . --config Release --target install
